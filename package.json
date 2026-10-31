@@ -1,0 +1,37 @@
+{
+  "name": "it-knowledge-atlas",
+  "version": "0.1.0",
+  "description": "IT 지식을 체계적으로 이해하고 개념을 연결하며, 매일 짧은 복습을 통해 기술사 답안에 필요한 설명 능력까지 기르는 개인 학습 프로젝트입니다. 흩어진 기술 메모와 단순 암기만으로는 지식의 관계와 설명 근거를 지속적으로 관리하기 어렵다는 문제에서 출발합니다.",
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 3002",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 3002",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "migrate": "node --env-file=.env.local ./node_modules/node-pg-migrate/bin/node-pg-migrate.js"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "26.6.6",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.3",
+    "node-pg-migrate": "9.0.0",
+    "postcss": "8.5.32",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
