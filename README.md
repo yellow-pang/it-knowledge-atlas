@@ -15,7 +15,7 @@ Mobile First로 하루 5~10분 학습을 목표로 합니다. 상세 범위와 �
 
 ## 제안 구성과 진행 상태
 
-Next.js App Router, React, TypeScript, Markdown + YAML Front Matter와 SQLite를 초기 후보로 권장합니다. Tailwind CSS는 UI 구현 시 채택하고 shadcn/ui는 필요한 컴포넌트가 생길 때만 검토합니다. 첫 MVP는 온라인 우선이며 서버 연결이 필요합니다. 오프라인 읽기와 복습 기록 동기화는 후속 단계입니다. 복습은 우선 단순한 명시적 규칙으로 시작하고 `ts-fsrs`는 실제 사용 후 평가합니다. 선택 근거와 대안은 [아키텍처](docs/architecture.md)에 정리했습니다.
+Next.js App Router, React, TypeScript, Markdown + YAML Front Matter와 PostgreSQL을 초기 후보로 권장합니다. 기존 OrbStack 환경과 장기 검색 목표를 고려한 선택이며 별도 DB 운영 비용이 있습니다. SQLite도 단순한 개인용 구성의 유효한 대안입니다. Tailwind CSS는 UI 구현 시 채택하고 shadcn/ui는 필요한 컴포넌트가 생길 때만 검토합니다. 첫 MVP는 온라인 우선이며 서버 연결이 필요합니다. 오프라인 읽기와 복습 기록 동기화는 후속 단계입니다. 복습은 우선 단순한 명시적 규칙으로 시작하고 `ts-fsrs`는 실제 사용 후 평가합니다. 선택 근거와 대안은 [아키텍처](docs/architecture.md)와 [DB 선택 기록](docs/decisions/001-database-selection.md)에 정리했습니다.
 
 현재는 **초기 설계 문서 단계**입니다. 앱, 콘텐츠, 데이터베이스 및 배포 환경은 아직 구현하거나 구축하지 않았습니다.
 
@@ -32,4 +32,5 @@ Next.js App Router, React, TypeScript, Markdown + YAML Front Matter와 SQLite를
 - [MVP와 완료 조건](docs/mvp.md)
 - [학습 모델](docs/learning-model.md)
 - [아키텍처와 운영 방향](docs/architecture.md)
+- [데이터베이스 선택 기록](docs/decisions/001-database-selection.md)
 - [에이전트 작업 규칙](AGENTS.md)
