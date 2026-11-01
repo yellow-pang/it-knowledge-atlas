@@ -21,7 +21,7 @@ function source(s: unknown): boolean {
   try { return new URL(s.url).protocol === "https:"; } catch { return false; }
 }
 function status(s: Record<string, unknown>): boolean {
-  return ["draft", "needs_review", "verified"].includes(String(s.verification)) && (s.verification !== "verified" || str(s.review));
+  return typeof s.verification === "string" && ["draft", "needs_review", "verified"].includes(s.verification) && (s.verification !== "verified" || str(s.review));
 }
 export function parseExamData(files: { name: string; text: string }[], concepts: Pick<Concept, "id">[]): ExamData {
   const all: Record<string, unknown[]> = Object.fromEntries(keys.map(k => [k, []]));

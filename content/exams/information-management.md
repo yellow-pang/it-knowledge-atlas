@@ -33,12 +33,13 @@
       "start": "2027-01-01",
       "end": "2030-12-31",
       "source": {
-        "title": "Q-Net 출제기준 목록",
-        "url": "https://www.q-net.or.kr/cst006.do?brdId=Q006&code=1202&gSite=Q&id=cst00601s01&page=1&schText=%EC%A0%95%EB%B3%B4%EA%B4%80%EB%A6%AC%EA%B8%B0%EC%88%A0%EC%82%AC&schType=T",
+        "title": "Q-Net 2027~2030 출제기준 자료실",
+        "url": "https://www.q-net.or.kr/cst006.do?id=cst00601&code=1202&gSite=Q",
         "checked": "2026-11-01",
-        "scope": "게시 제목의 적용 기간; 첨부 원문 세부 내용 미확인"
+        "scope": "자료실에서 정보관리기술사 검색 → 2027~2030 기준 선택; 보고서 1~2쪽의 적용 기간, 필기 주요·세부항목"
       },
-      "verification": "needs_review"
+      "verification": "verified",
+      "review": "2026-11-01 AI 원문 대조: Q-Net 뷰어 1쪽 적용 기간; 독립 검토 전"
     }
   ],
   "areas": [
@@ -68,12 +69,46 @@
       },
       "verification": "verified",
       "review": "2026-11-01 AI 원문 대조: 필기 자료처리의 세부항목 3; 독립 검토 전"
+    },
+    {
+      "id": "im-2027-data-processing",
+      "syllabusId": "information-management-2027-2030",
+      "name": "자료처리",
+      "source": {
+        "title": "Q-Net 2027~2030 출제기준 자료실",
+        "url": "https://www.q-net.or.kr/cst006.do?id=cst00601&code=1202&gSite=Q",
+        "checked": "2026-11-01",
+        "scope": "자료실에서 정보관리기술사 검색 → 2027~2030 기준 선택; 보고서 1~2쪽의 적용 기간, 필기 주요·세부항목"
+      },
+      "verification": "verified",
+      "review": "2026-11-01 AI 원문 대조: 보고서 2쪽 필기 주요항목 3; 독립 검토 전"
+    },
+    {
+      "id": "im-2027-dbms-distributed-files",
+      "syllabusId": "information-management-2027-2030",
+      "parentId": "im-2027-data-processing",
+      "name": "DBMS과 분산파일처리",
+      "source": {
+        "title": "Q-Net 2027~2030 출제기준 자료실",
+        "url": "https://www.q-net.or.kr/cst006.do?id=cst00601&code=1202&gSite=Q",
+        "checked": "2026-11-01",
+        "scope": "자료실에서 정보관리기술사 검색 → 2027~2030 기준 선택; 보고서 1~2쪽의 적용 기간, 필기 주요·세부항목"
+      },
+      "verification": "verified",
+      "review": "2026-11-01 AI 원문 대조: 보고서 2쪽 필기 자료처리의 세부항목 3; 독립 검토 전"
     }
   ],
   "areaRelations": [
     {
       "conceptId": "isolation-level",
       "areaId": "im-2023-dbms-distributed-files",
+      "reason": "격리 수준은 DBMS의 동시 트랜잭션 처리에 관한 개념으로, 공식 세부항목 DBMS 관련 학습에 해당한다. 기준 원문이 격리 수준을 명시한 것은 아니다.",
+      "verification": "verified",
+      "review": "2026-11-01 AI 대조: 기준 항목과 개념 설명을 비교한 해석; 독립 검토 전"
+    },
+    {
+      "conceptId": "isolation-level",
+      "areaId": "im-2027-dbms-distributed-files",
       "reason": "격리 수준은 DBMS의 동시 트랜잭션 처리에 관한 개념으로, 공식 세부항목 DBMS 관련 학습에 해당한다. 기준 원문이 격리 수준을 명시한 것은 아니다.",
       "verification": "verified",
       "review": "2026-11-01 AI 대조: 기준 항목과 개념 설명을 비교한 해석; 독립 검토 전"
@@ -89,7 +124,7 @@
         "title": "Q-Net 제137회 정보관리기술사 문제지",
         "url": "https://www.q-net.or.kr/cst006.do?artlSeq=5242749&brdId=Q006&code=1203&gSite=Q&id=cst00602",
         "checked": "2026-11-01",
-        "scope": "게시물 제목과 첨부 문제지 존재; 문제지 내용 미확인"
+        "scope": "게시물 제목과 첨부 문제지 존재; 개별 문항은 별도 항목에 기록"
       },
       "verification": "needs_review"
     },
@@ -122,4 +157,4 @@
   ]
 }
 ---
-공식 게시 정보만 기록하며 첨부 문서 내용과 개별 연결은 확인 후 추가합니다.
+공식 원문에서 대조한 범위와 개념 연결을 기록합니다. AI 대조 결과는 독립 검토 전입니다.
