@@ -1,3 +1,4 @@
+import { authenticated } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -5,6 +6,7 @@ export const runtime = "nodejs";
 
 export async function GET() {
   if (process.env.NODE_ENV === "production") return new Response(null, { status: 404 });
+  if (!await authenticated()) return new Response(null, { status: 401 });
   try {
     await getDb().query("SELECT 1");
     return Response.json({ connected: true }, { headers: { "Cache-Control": "no-store" } });

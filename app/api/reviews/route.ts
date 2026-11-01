@@ -1,9 +1,12 @@
+import { authenticated, sameOrigin } from "@/lib/auth";
 import { getConcepts } from "@/lib/concepts";
 import { RequestConflict, saveReview } from "@/lib/progress";
 import { isRating } from "@/lib/review";
 import { revalidatePath } from "next/cache";
 
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return Response.json({ error: "요청을 확인해 주세요." }, { status: 403 });
+  if (!await authenticated()) return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
   let data: unknown;
   try { data = await request.json(); } catch { return Response.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 }); }
   if (!data || typeof data !== "object") return Response.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });

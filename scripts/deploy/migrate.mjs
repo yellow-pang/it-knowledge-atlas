@@ -31,6 +31,8 @@ try {
   await client.query('GRANT SELECT, INSERT, UPDATE ON learning_state TO atlas_app');
   await client.query('REVOKE UPDATE ON review_event FROM atlas_app');
   await client.query('GRANT SELECT, INSERT ON review_event TO atlas_app');
+  await client.query('GRANT SELECT, INSERT, DELETE ON auth_session TO atlas_app');
+  await client.query('GRANT SELECT, UPDATE ON auth_attempt TO atlas_app');
 } finally {
   await client.end();
 }
