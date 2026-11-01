@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
+  if (process.env.NODE_ENV === "production") return new Response(null, { status: 404 });
   try {
     await getDb().query("SELECT 1");
     return Response.json({ connected: true }, { headers: { "Cache-Control": "no-store" } });
