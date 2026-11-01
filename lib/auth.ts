@@ -4,6 +4,7 @@ import { promisify } from "node:util";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { parsePasswordHash } from "@/lib/password-hash";
 
 const scrypt = promisify(scryptCallback);
 const cookieName = "atlas_session";
@@ -21,7 +22,7 @@ export async function requireAuth() { if (!await authenticated()) redirect("/log
 export async function login(username: string, password: string) {
   const configuredUser = process.env.AUTH_USERNAME;
   const encoded = process.env.AUTH_PASSWORD_HASH || "";
-  const match = /^scrypt\$([a-f0-9]{32})\$([a-f0-9]{128})$/.exec(encoded);
+  const match = parsePasswordHash(encoded);
   const days = Number(process.env.AUTH_SESSION_DAYS || 30);
   if (!configuredUser || !match || !Number.isInteger(days) || days < 1 || days > 30) throw new Error("인증 설정 오류");
   const db = getDb();
@@ -31,8 +32,8 @@ export async function login(username: string, password: string) {
     const result = await client.query("SELECT failures, blocked_until > now() AS blocked FROM auth_attempt WHERE id = 1 FOR UPDATE");
     if (!result.rowCount) throw new Error("인증 설정 오류");
     if (result.rows[0].blocked) { await client.query("COMMIT"); return { status: "limited" as const }; }
-    const derived = await scrypt(password, Buffer.from(match[1], "hex"), 64) as Buffer;
-    const valid = timingSafeEqual(derived, Buffer.from(match[2], "hex")) && username === configuredUser;
+    const derived = await scrypt(password, match.salt, 64) as Buffer;
+    const valid = timingSafeEqual(derived, match.hash) && username === configuredUser;
     if (!valid) {
       await client.query("UPDATE auth_attempt SET failures = CASE WHEN failures >= 4 THEN 0 ELSE failures + 1 END, blocked_until = CASE WHEN failures >= 4 THEN now() + interval '15 minutes' ELSE NULL END WHERE id = 1");
       await client.query("COMMIT"); return { status: "invalid" as const };

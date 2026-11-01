@@ -5,10 +5,10 @@
 ## 최초 배포와 갱신
 
 1. 병합된 main의 검증된 커밋을 운영용 체크아웃에서 확인하고, 기존 서비스·포트·디스크 여유를 확인한다. 다른 Compose 프로젝트나 개발 DB를 사용하지 않는다. 이 문서의 명령은 해당 체크아웃에서 실행한다.
-2. `.env.production.example`을 `.env.production`으로 복사하고 `chmod 600 .env.production`을 실행한다. DB 비밀번호 두 개는 **서로 다른 긴 영문·숫자 무작위 값**으로 바꾼다. README의 비밀번호 해시 생성 절차에 따라 별도의 앱 로그인 해시와 계정 ID를 설정한다. `APP_ORIGIN`에는 실제 HTTPS 출처를 설정한다. `AUTH_SESSION_DAYS`는 1~30일이다. 셸 환경에 같은 변수명이 설정돼 있으면 Compose의 env-file보다 우선할 수 있으므로 제거한다. 파일과 자격 증명은 Git·로그에 넣지 않고 안전하게 보관한다. 포트가 사용 중이면 `ATLAS_PORT`를 비어 있는 루프백 포트로 변경한다.
-3. `docker compose --env-file .env.production -f compose.production.yaml build`로 고정된 커밋의 앱과 Markdown을 빌드한다. `docker compose --env-file .env.production -f compose.production.yaml up -d --wait db`로 전용 DB를 시작한다.
+2. `.env.production.example`을 `.env.production`으로 복사하고 `chmod 600 .env.production`을 실행한다. DB 비밀번호 두 개는 **서로 다른 긴 영문·숫자 무작위 값**으로 바꾼다. README의 비밀번호 해시 생성 절차에 따라 별도의 앱 로그인 해시와 계정 ID를 설정한다. `APP_ORIGIN`에는 실제 접속 주소의 HTTPS 출처만 설정한다(예: `https://atlas.example.com`, 경로와 마지막 `/` 제외). 포트가 있으면 포함한다. 로그인·로그아웃·복습 저장의 Origin 검사가 이 값과 정확히 일치해야 한다. `AUTH_SESSION_DAYS`는 1~30일이다. 셸 환경에 같은 변수명이 설정돼 있으면 Compose의 env-file보다 우선할 수 있으므로 제거한다. 파일과 자격 증명은 Git·로그에 넣지 않고 안전하게 보관한다. 포트가 사용 중이면 `ATLAS_PORT`를 비어 있는 루프백 포트로 변경한다.
+3. `docker compose --env-file .env.production -f compose.production.yaml build`로 고정된 커밋의 앱과 Markdown을 빌드한다. Dockerfile은 기본 `npm run build`(Turbopack)를 사용한다. 5-C-1에서 성공한 `npx next build --webpack`과 다르므로 5-C-2에서 실제 운영 이미지 빌드 성공 여부를 확인한다. `docker compose --env-file .env.production -f compose.production.yaml up -d --wait db`로 전용 DB를 시작한다.
 4. 프로젝트 이름 `it-knowledge-atlas-prod`, 서비스 `db`, DB `atlas_prod`, 계정 `atlas_owner`가 맞는지 확인한다. `docker compose --env-file .env.production -f compose.production.yaml run --build --rm migrate`를 실행한다. `--build`는 이전 마이그레이션 이미지가 남아 있어도 현재 커밋으로 다시 빌드하기 위해 필요하다. 마이그레이션은 내부 호스트와 DB·계정을 검사하고 앱 계정에 필요한 테이블 권한을 부여하고 해당 자격 증명으로 실제 연결을 확인한다. 기존 비밀번호와 환경 파일이 다르면 실패하며 자동 변경하지 않는다. 운영 DB를 개발 명령이나 통합 테스트 대상으로 사용하지 않는다. 스키마 변경 전 백업하고 변경 내용을 검토한다.
-5. `docker compose --env-file .env.production -f compose.production.yaml up -d --wait app`을 실행한다. `docker compose --env-file .env.production -f compose.production.yaml ps`와 `http://127.0.0.1:3002`에서 오늘의 학습과 상세를 확인한다. 다른 포트를 선택했다면 주소를 바꾼다. `/api/health`는 개인 데이터를 반환하지 않는다. 상태 확인은 앱 HTTP 응답과 DB 준비 상태를 나타내며 모든 기능의 정상 동작을 보장하지 않는다.
+5. `docker compose --env-file .env.production -f compose.production.yaml up -d --wait app`을 실행한다. `docker compose --env-file .env.production -f compose.production.yaml ps`와 루프백의 `http://127.0.0.1:3002/api/health`로 프로세스 상태를 확인한다. 다른 포트를 선택했다면 주소를 바꾼다. 운영 모드에서는 Secure 쿠키와 HTTPS 출처 검사를 사용하므로 루프백 HTTP에서 로그인·학습 기능을 확인할 수 없다. 별도 격리 HTTPS 환경에서 로그인과 학습·복습을 검증한다. `/api/health`는 개인 데이터를 반환하지 않는다. 상태 확인은 앱 HTTP 응답과 DB 준비 상태를 나타내며 모든 기능의 정상 동작을 보장하지 않는다.
 6. 콘텐츠 변경도 검증·병합된 커밋으로 위 빌드와 마이그레이션 및 앱 시작 절차를 반복한다. 콘텐츠는 이미지에 포함되며 실행 중 파일 변경이 반영되지 않는다. DB 볼륨과 개인 기록은 빌드로 초기화되지 않는다. 적용 커밋을 백업과 함께 기록한다.
 
 DB 최초 생성 후 환경 파일만 바꿔서는 DB 비밀번호가 바뀌지 않는다. 앱 계정이 이미 있으면 마이그레이션은 비밀번호를 변경하지 않는다. 자격 증명 교체는 DB의 해당 역할과 환경 파일을 함께 변경하고 재연결을 확인한다. `down -v`, 볼륨 삭제, 초기화는 사용하지 않는다. 컨테이너 재시작 정책은 Mac 및 OrbStack 자동 기동을 보장하지 않는다.
@@ -34,4 +34,6 @@ chmod 700 "$HOME/atlas-backups"
 
 ## 인증 운영
 
-운영 쿠키는 Secure이므로 HTTPS에서만 전송된다. `APP_ORIGIN`은 외부 주소와 정확히 같아야 하며 운영 모드에서 HTTP 출처는 상태 변경에 허용되지 않는다. Tunnel 연결 전에는 별도의 격리 HTTPS 환경에서 로그인·로그아웃·복습 및 CSRF를 확인한다. 환경 파일은 접근 권한을 제한하고 백업 시 비밀로 취급한다. 세션 토큰은 무작위 값이며 별도 서명 비밀키는 필요하지 않다. 로그인 비밀번호를 교체하거나 유출이 의심되면 해시를 교체하고 서버 측 세션을 모두 폐기한다. 제한 해제와 세션 폐기 방법은 [README](../README.md#개인-로그인-설정)를 따른다. 인증 실패의 민감한 값은 기록하지 않으며 외부 공개 전 모니터링과 원본 우회 경로를 점검한다.
+운영 쿠키는 Secure이므로 HTTPS에서만 전송된다. `APP_ORIGIN`은 외부 주소와 정확히 같아야 하며 운영 모드에서 HTTP 출처는 상태 변경에 허용되지 않는다. Tunnel 연결 전에는 별도의 격리 HTTPS 환경에서 로그인·로그아웃·복습 및 CSRF를 확인한다. 실제 서브도메인 연결 시 브라우저의 출처와 `APP_ORIGIN`이 일치하는지 확인하고 정상 로그인·복습 저장 및 다른 Origin의 요청 거부를 검증한다. 환경 파일은 접근 권한을 제한하고 백업 시 비밀로 취급한다. 세션 토큰은 무작위 값이며 별도 서명 비밀키는 필요하지 않다. 로그인 비밀번호를 교체하거나 유출이 의심되면 해시를 교체하고 서버 측 세션을 모두 폐기한다. 제한 해제와 세션 폐기 방법은 [README](../README.md#개인-로그인-설정)를 따른다. 인증 실패의 민감한 값은 기록하지 않으며 외부 공개 전 모니터링과 원본 우회 경로를 점검한다.
+
+로그인 실패 제한은 IP나 ID를 구분하지 않는 전역 카운터이므로 외부인이 반복 실패를 유발하면 본인의 새 로그인도 15분간 차단될 수 있다. 초기에는 이 단순한 방식을 유지하고 실제 사용 중 문제가 생기면 접근 경로와 제한 방식을 재검토한다.
