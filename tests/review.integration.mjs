@@ -43,3 +43,19 @@ test('첫 평가, 재평가, 멱등성, 원자성과 화면', async () => {
   const detail = await (await fetch(`${appUrl}/concepts/${concept}`)).text();
   assert.match(detail, /생각한 뒤 핵심 내용 확인하기/); assert.match(detail, /기억 상태를 평가해 주세요/);
 });
+test('시험 연계 화면 조회가 기존 복습 이력과 예정일을 변경하지 않는다', async () => {
+  const concept = 'isolation-level';
+  assert.equal((await send(randomUUID(), concept, 'remembered')).status, 200);
+  const snapshot = async () => ({
+    state: (await pool.query('SELECT concept_id, first_reviewed_at, last_reviewed_at, next_review_date::text, rule_version FROM learning_state WHERE concept_id=$1', [concept])).rows,
+    events: (await pool.query('SELECT id, concept_id, rating, reviewed_at, next_review_date::text, rule_version FROM review_event WHERE concept_id=$1 ORDER BY id', [concept])).rows,
+  });
+  const before = await snapshot();
+  const response = await fetch(`${appUrl}/concepts/${concept}`);
+  assert.equal(response.status, 200);
+  const detail = await response.text();
+  assert.match(detail, /2023-01-01/); assert.match(detail, /2027-01-01/);
+  assert.match(detail, /im-2027-dbms-distributed-files|DBMS과 분산파일처리/);
+  assert.match(detail, /3교시/); assert.match(detail, /4번/);
+  assert.deepEqual(await snapshot(), before);
+});
