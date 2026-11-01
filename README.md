@@ -49,4 +49,5 @@ Node.js 22.12 이상, npm, OrbStack과 Docker Compose가 필요합니다. 기존
 - [학습 모델](docs/learning-model.md)
 - [아키텍처와 운영 방향](docs/architecture.md)
 - [데이터베이스 선택 기록](docs/decisions/001-database-selection.md)
+- [DB 사용과 운영 준비](docs/database-operations.md)
 - [에이전트 작업 규칙](AGENTS.md)
