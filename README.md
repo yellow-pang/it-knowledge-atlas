@@ -52,6 +52,7 @@ Codex 샌드박스에서는 기본 Turbopack 빌드가 내부 포트 바인딩 �
 - [비전과 성공 기준](docs/vision.md)
 - [MVP와 완료 조건](docs/mvp.md)
 - [학습 모델](docs/learning-model.md)
+- [콘텐츠 작성과 가져오기](docs/content-workflow.md)
 - [아키텍처와 운영 방향](docs/architecture.md)
 - [데이터베이스 선택 기록](docs/decisions/001-database-selection.md)
 - [DB 사용과 운영 준비](docs/database-operations.md)
@@ -62,6 +63,8 @@ Codex 샌드박스에서는 기본 Turbopack 빌드가 내부 포트 바인딩 �
 현재 다섯 개 개념의 목록·상세와 관계 이동, 기술사 관점의 회상 안내 및 개발 DB 기반 진도·복습 저장을 제공합니다. DB 연결 실패 시 기록은 표시하거나 저장할 수 없지만 개념은 읽을 수 있습니다. 운영 환경은 아직 구현하지 않았습니다.
 
 다섯 개 콘텐츠는 공식 자료와 대조했으나 독립 검토 전이므로 `needs_review`를 유지합니다. 2단계 개념 학습 화면은 Safari 반응형 모드에서 일부 동작을 확인했습니다. 3단계 평가 화면의 브라우저 조작과 실제 스마트폰 사용성은 아직 검증하지 않았습니다. 자세한 범위와 남은 검증은 [MVP](docs/mvp.md#모바일-검증)를 따릅니다.
+
+직접 작성과 기존 Markdown 가져오기 절차는 [콘텐츠 관리 안내](docs/content-workflow.md)를 따릅니다.
 
 `content/concepts/*.md`가 원본입니다. 파일명과 관계없이 `id`가 안정적인 식별자이며, 제목 변경이나 파일 이동 시에도 유지합니다. Front Matter는 YAML의 부분집합인 **JSON 객체**를 `---` 사이에 작성합니다. 별도 파서 의존성 없이 엄격하게 검사하기 위한 제한이며, 본문은 빈 줄로 구분한 일반 Markdown 문단만 지원합니다. 제목·목록·링크 등 다른 Markdown 구문은 현재 렌더링하지 않습니다. 기존 파일을 예시로 사용하세요.
 
