@@ -44,6 +44,8 @@ Node.js 22.12 이상과 npm이 필요합니다. `npm ci` 후 `npm run dev`를 �
 
 `npm test`, `npm run content:check`, `npm run typecheck`, `npm run lint`, `npm run build`로 검사합니다.
 
+GitHub Actions CI는 `main` 브랜치에 대한 push와 pull request에서 위 검사를 GitHub 호스팅 Linux 환경과 Node.js 24로 실행합니다. 운영 서버·DB·비밀정보에는 접근하지 않으며 자동 배포는 하지 않습니다. 별도 DB가 필요한 통합 테스트와 실제 Mac mini·스마트폰 검증은 이 CI에 포함되지 않습니다. 워크플로의 GitHub 실행 결과는 push 후 확인해야 합니다. 표준 호스팅 러너의 비용은 저장소 공개 여부와 계정 무료 사용량에 따라 달라질 수 있으므로 [GitHub 요금 안내](https://docs.github.com/en/actions/concepts/billing-and-usage)와 계정 사용량을 확인합니다.
+
 Codex 샌드박스에서는 기본 Turbopack 빌드가 내부 포트 바인딩 제한으로 `EPERM`을 반환할 수 있습니다. 5-C-1에서 `npx next build --webpack`이 성공했고, 5-C-2에서는 운영 Dockerfile의 기본 `npm run build`를 포함한 이미지 빌드가 성공했습니다.
 
 개발 DB는 프로젝트 전용 Compose 볼륨에 저장됩니다. `docker compose --env-file .env.local stop`은 컨테이너만 중지하며 데이터를 보존합니다. 볼륨은 백업이 아니고 `down -v`는 데이터를 삭제합니다. 비밀번호는 DB 최초 생성 시 적용되며 기존 볼륨의 비밀번호를 자동 변경하지 않습니다. 운영 데이터는 이 환경에 넣지 않습니다. DB 포트는 루프백에만 게시하지만 OrbStack의 컨테이너 직접 접근 등 다른 경로는 별도 점검이 필요합니다. DB 확인 경로는 개발 환경에서도 로그인해야 하며 운영에서는 404입니다.
