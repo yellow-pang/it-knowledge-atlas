@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "migrate": "node --env-file=.env.local ./node_modules/node-pg-migrate/bin/node-pg-migrate.js",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "content:check": "node --experimental-strip-types scripts/check-content.ts"
+    "content:check": "node --experimental-strip-types scripts/check-content.ts",
+    "content:import": "node --experimental-strip-types scripts/import-content.ts"
   },
   "dependencies": {
     "next": "16.4.3",
