@@ -1,0 +1,19 @@
+name: it-knowledge-atlas-dev
+services:
+  db:
+    image: postgres:16.11-alpine
+    environment:
+      POSTGRES_DB: atlas_dev
+      POSTGRES_USER: atlas_dev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.local}
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - atlas-dev-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atlas_dev -d atlas_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  atlas-dev-postgres:

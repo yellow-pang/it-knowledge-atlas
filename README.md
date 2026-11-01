@@ -17,9 +17,9 @@ Mobile First로 하루 5~10분 학습을 목표로 합니다. 상세 범위와 �
 
 ## 제안 구성과 진행 상태
 
-초기 데이터베이스로 PostgreSQL을 채택합니다. Mac mini와 OrbStack에서의 실제 운영 적합성은 아직 검증 전이며, 중대한 문제가 확인되면 결정을 재검토합니다. Markdown + Git을 콘텐츠 원본으로 유지하고 PostgreSQL은 개인 기록과 향후 재생성 가능한 검색 인덱스를 담당합니다. Next.js App Router, React, TypeScript와 Tailwind CSS는 초기 구현 후보이며 shadcn/ui는 필요한 컴포넌트가 생길 때만 검토합니다. 첫 MVP는 온라인 우선이며 서버 연결이 필요합니다. 오프라인 읽기와 복습 기록 동기화는 후속 단계입니다. 복습은 우선 단순한 명시적 규칙으로 시작하고 `ts-fsrs`는 실제 사용 후 평가합니다. 선택 근거와 대안은 [아키텍처](docs/architecture.md)와 [DB 선택 기록](docs/decisions/001-database-selection.md)에 정리했습니다.
+초기 데이터베이스로 PostgreSQL을 채택합니다. Mac mini와 OrbStack에서의 실제 운영 적합성은 아직 검증 전이며, 중대한 문제가 확인되면 결정을 재검토합니다. Markdown + Git을 콘텐츠 원본으로 유지하고 PostgreSQL은 개인 기록과 향후 재생성 가능한 검색 인덱스를 담당합니다. Next.js App Router, React, TypeScript와 Tailwind CSS로 개발 환경을 구성했으며 shadcn/ui는 필요한 컴포넌트가 생길 때만 검토합니다. 첫 MVP는 온라인 우선이며 서버 연결이 필요합니다. 오프라인 읽기와 복습 기록 동기화는 후속 단계입니다. 복습은 우선 단순한 명시적 규칙으로 시작하고 `ts-fsrs`는 실제 사용 후 평가합니다. 선택 근거와 대안은 [아키텍처](docs/architecture.md)와 [DB 선택 기록](docs/decisions/001-database-selection.md)에 정리했습니다.
 
-현재는 **초기 설계 문서 단계**입니다. 앱, 콘텐츠, 데이터베이스 및 배포 환경은 아직 구현하거나 구축하지 않았습니다.
+현재는 **개발 환경 구축 단계**입니다. 시작 화면과 개발용 DB 연결을 준비했으며 학습 기능, 콘텐츠와 운영 환경은 아직 구현하지 않았습니다.
 
 1. 설계와 공식 자료 확보 범위 확인
 2. 프로젝트 초기화와 최소 학습 흐름 구현
@@ -28,6 +28,20 @@ Mobile First로 하루 5~10분 학습을 목표로 합니다. 상세 범위와 �
 
 기존 `yellow-pang/yelloh-pang-lab`은 오픈소스 분석·실험 저장소로 유지하고, 이 프로젝트에서는 필요할 때 출처 링크로 참조합니다. 자동 수집은 MVP에 포함하지 않습니다.
 
+## 개발 환경 실행
+
+Node.js 22.12 이상, npm, OrbStack과 Docker Compose가 필요합니다. 기존 서비스와 충돌하지 않도록 앱은 `127.0.0.1:3002`, 개발 DB는 `127.0.0.1:55432`를 사용합니다. 포트가 이미 사용 중이면 확인 후 로컬 설정을 조정하세요.
+
+1. `npm ci`로 lockfile에 고정된 패키지를 설치합니다.
+2. `.env.example`을 `.env.local`로 복사하고 개발 전용 비밀번호를 생성해 두 항목에 같은 값으로 설정합니다. URL에서 특수문자를 쓰려면 URL 인코딩이 필요하므로 영문·숫자 비밀번호를 권장합니다. 이 파일은 Git에 포함하지 않습니다.
+3. `docker compose --env-file .env.local up -d --wait`로 개발 DB를 시작합니다.
+4. `npm run dev` 실행 후 [시작 화면](http://127.0.0.1:3002)을 엽니다. [DB 연결 확인](http://127.0.0.1:3002/api/db-check)은 서버에서 `SELECT 1`을 실행하고 성공 여부만 반환합니다.
+5. `npm run typecheck`, `npm run lint`, `npm run build`로 검사합니다.
+
+개발 DB는 프로젝트 전용 Compose 볼륨에 저장됩니다. `docker compose --env-file .env.local stop`은 컨테이너만 중지하며 데이터를 보존합니다. 볼륨은 백업이 아니고 `down -v`는 데이터를 삭제합니다. 비밀번호는 DB 최초 생성 시 적용되며 기존 볼륨의 비밀번호를 자동 변경하지 않습니다. 운영 데이터는 이 환경에 넣지 않습니다. DB 포트는 루프백에만 게시하지만 OrbStack의 컨테이너 직접 접근 등 다른 경로는 별도 점검이 필요합니다. DB 확인 경로는 인증이 없으므로 개발 서버를 외부에 공개하지 마세요.
+
+스키마 변경은 PostgreSQL 전용 `node-pg-migrate`를 사용합니다. ORM이나 학습 테이블을 미리 도입하지 않기 위한 선택입니다. `npm run migrate -- create 변경이름`으로 마이그레이션을 만들고 검토한 뒤 `npm run migrate -- up`으로 적용합니다. 명령은 `.env.local`의 `DATABASE_URL`을 읽으므로 실행 전 반드시 개발 DB를 가리키는지 확인하세요. 현재 학습 모델 마이그레이션은 없습니다. 운영 배포와 백업·복구 절차는 별도 검증이 필요합니다.
+
 ## 설계 문서
 
 - [비전과 성공 기준](docs/vision.md)
@@ -35,4 +49,5 @@ Mobile First로 하루 5~10분 학습을 목표로 합니다. 상세 범위와 �
 - [학습 모델](docs/learning-model.md)
 - [아키텍처와 운영 방향](docs/architecture.md)
 - [데이터베이스 선택 기록](docs/decisions/001-database-selection.md)
+- [DB 사용과 운영 준비](docs/database-operations.md)
 - [에이전트 작업 규칙](AGENTS.md)
