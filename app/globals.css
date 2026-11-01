@@ -1,7 +1,48 @@
 @import "tailwindcss";
-
-body {
-  background: #f7f8f5;
-  color: #17261f;
-  font-family: Arial, sans-serif;
-}
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f8f8f3; color: #1d3029; font-family: Arial, sans-serif; word-break: keep-all; }
+a { color: inherit; }
+a:focus-visible { outline: 3px solid #c2743b; outline-offset: 4px; }
+.shell { max-width: 1120px; margin: auto; padding: 0 24px; }
+.site-header { height: 82px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dce3dc; }
+.brand { font-size: 12px; font-weight: 800; letter-spacing: .16em; text-decoration: none; }
+.header-note, .back { font-size: 13px; color: #5d7065; text-decoration: none; }
+.intro { padding: 86px 0 88px; }
+.eyebrow { color: #547c68; font-size: 11px; font-weight: 800; letter-spacing: .14em; }
+h1, h2, h3, p { margin: 0; }
+.intro h1 { font-size: clamp(36px, 5vw, 58px); line-height: 1.28; letter-spacing: -.055em; margin: 18px 0 22px; }
+.intro h1 em { font-style: normal; color: #648b73; }
+.intro > p:last-child, .section-description { color: #647369; line-height: 1.8; font-size: 15px; }
+.section-heading { display: flex; justify-content: space-between; align-items: end; }
+.section-heading h2, .reading h2, .recall h2, .relations h2 { margin-top: 10px; font-size: 25px; letter-spacing: -.04em; }
+.section-heading > span { color: #78877c; font-size: 13px; }
+.section-description { margin: 12px 0 24px; }
+.concept-list { border-top: 1px solid #aebfb0; }
+.concept-card { display: grid; grid-template-columns: 48px 1fr 25px; gap: 16px; padding: 25px 8px; border-bottom: 1px solid #dce3dc; text-decoration: none; transition: background .15s; }
+.concept-card:hover { background: #edf2eb; }
+.card-number { color: #9aac9c; font-size: 12px; padding-top: 5px; }
+.tag { display: inline-block; color: #587b67; background: #e9f0e9; padding: 5px 9px; border-radius: 3px; font-size: 11px; font-weight: bold; }
+.concept-card h3 { margin: 9px 0 7px; font-size: 19px; }
+.concept-card p { color: #66766d; font-size: 14px; line-height: 1.7; }
+.arrow { color: #73917d; font-size: 19px; }
+footer { margin-top: 100px; border-top: 1px solid #dce3dc; padding: 25px 0 35px; color: #849388; font-size: 11px; letter-spacing: .05em; }
+footer span { margin: 0 6px; }
+.detail-title { padding: 70px 0 48px; border-bottom: 1px solid #dce3dc; }
+.detail-title h1 { font-size: clamp(36px, 5vw, 52px); letter-spacing: -.05em; margin: 18px 0; }
+.definition { color: #53685b; font-size: 18px; line-height: 1.8; max-width: 720px; }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 80px; padding-top: 45px; }
+.reading p:not(.eyebrow) { margin-top: 22px; color: #405348; font-size: 16px; line-height: 2; }
+.recall { margin-top: 52px; padding: 28px; background: #e8f0e7; border-left: 3px solid #799b80; }
+.recall > p:not(.eyebrow) { margin-top: 15px; line-height: 1.8; font-size: 15px; color: #405b49; }
+.recall .recall-note { font-size: 12px !important; color: #687d6e !important; }
+.relations { border-top: 1px solid #aebfb0; padding-top: 20px; }
+.relations h2 { font-size: 20px; }
+.relation-group { margin-top: 28px; }
+.relation-group h3 { color: #788a7d; font-size: 12px; margin-bottom: 8px; }
+.relation-group a { display: flex; justify-content: space-between; gap: 10px; padding: 13px 0; border-bottom: 1px solid #dce3dc; font-size: 14px; text-decoration: none; }
+.relation-group a:hover, .back:hover, .sources a:hover { text-decoration: underline; }
+.sources { margin-top: 50px; font-size: 13px; color: #687a6d; line-height: 1.8; overflow-wrap: anywhere; }
+.sources h2 { color: #344c3d; font-size: 17px; margin-bottom: 10px; }
+.sources ul { padding-left: 20px; margin-top: 12px; }.sources li { margin: 8px 0; }
+@media (max-width: 700px) { .site-header { height: 68px; }.intro { padding: 65px 0; }.detail-title { padding: 50px 0 35px; }.detail-grid { grid-template-columns: 1fr; gap: 42px; }.relations { grid-row: 2; }.concept-card { grid-template-columns: 28px 1fr 20px; gap: 10px; }.recall { padding: 22px; } footer { margin-top: 70px; } }

@@ -1,14 +1,14 @@
+import Link from "next/link";
+import { getConcepts } from "@/lib/concepts";
+
 export default function Home() {
-  return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6 py-16 sm:px-10">
-      <p className="text-sm font-semibold tracking-wide text-emerald-700">IT KNOWLEDGE ATLAS</p>
-      <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">지식을 연결하고,<br />매일 조금씩 성장합니다.</h1>
-      <p className="mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-        IT 개념을 이해하고 복습하며 스스로 설명하는 힘을 기르는 개인 학습 공간입니다.
-      </p>
-      <p className="mt-10 border-t border-slate-200 pt-6 text-sm leading-6 text-slate-500">
-        현재 개발 환경을 준비했습니다. 학습 기능은 다음 단계에서 구현합니다.
-      </p>
-    </main>
-  );
+  const concepts = getConcepts();
+  return <main className="shell">
+    <header className="site-header"><span className="brand">IT KNOWLEDGE ATLAS</span><span className="header-note">개념 학습</span></header>
+    <section className="intro"><p className="eyebrow">하루의 배움, 하나의 연결</p><h1>개념을 이해하고<br /><em>나의 언어로</em> 설명하기</h1><p>작은 개념부터 차근차근 읽고, 연결된 지식으로 넓혀 보세요.</p></section>
+    <section aria-labelledby="concepts-heading"><div className="section-heading"><div><p className="eyebrow">EXPLORE</p><h2 id="concepts-heading">학습할 개념</h2></div><span>{concepts.length}개의 개념</span></div>
+      <p className="section-description">데이터베이스의 트랜잭션과 동시성을 중심으로 살펴봅니다.</p>
+      <div className="concept-list">{concepts.map((concept, index) => <Link className="concept-card" href={`/concepts/${concept.id}`} key={concept.id}><span className="card-number">{String(index + 1).padStart(2, "0")}</span><div>{concept.domains.map((domain) => <span className="tag" key={domain}>{domain === "database" ? "데이터베이스" : domain}</span>)}<h3>{concept.name}</h3><p>{concept.definition}</p></div><span className="arrow" aria-hidden="true">↗</span></Link>)}</div>
+    </section><footer>IT KNOWLEDGE ATLAS <span>·</span> 이해하고 연결하는 학습</footer>
+  </main>;
 }
