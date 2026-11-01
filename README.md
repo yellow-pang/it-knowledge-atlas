@@ -49,7 +49,7 @@ Codex 샌드박스에서는 기본 Turbopack 빌드가 내부 포트 바인딩 �
 
 스키마 변경은 PostgreSQL 전용 `node-pg-migrate`를 사용합니다. ORM 없이 스키마 변경을 관리하기 위한 선택입니다. `npm run migrate -- create 변경이름`으로 마이그레이션을 만들고 검토한 뒤 `npm run migrate -- up`으로 적용합니다. 명령은 `.env.local`의 `DATABASE_URL`을 읽으므로 실행 전 반드시 개발 DB를 가리키는지 확인하세요. 학습 상태와 복습 이력 마이그레이션을 적용해야 저장할 수 있습니다. 운영 배포와 백업·복구는 [운영 배포 안내](docs/production-deployment.md)를 따릅니다.
 
-운영 구성과 병합 후 배포·백업 절차는 [Mac mini 운영 배포](docs/production-deployment.md)를 참고하세요. 최종 운영 서비스는 병합된 main의 검증된 커밋으로 실행합니다.
+운영 구성과 병합 후 배포·백업 절차는 [Mac mini 운영 배포](docs/production-deployment.md)를, 배포할 때의 설정·검증 기록은 [운영 배포 점검표](docs/deployment-checklist.md)를 참고하세요. 최종 운영 서비스는 병합된 main의 검증된 커밋으로 실행합니다.
 
 ## 설계 문서
 
