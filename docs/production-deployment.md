@@ -1,14 +1,14 @@
 # Mac mini 운영 배포
 
-이 구성은 병합 후 검증된 main 커밋으로 실행한다. 5-B의 테스트 실행은 최종 운영 배포가 아니다. 기존 OrbStack 방식에 맞춰 앱과 PostgreSQL 16을 별도 Compose 프로젝트와 네트워크로 실행한다. macOS Node 프로세스도 가능하지만 별도 프로세스 관리와 DB 접근 설정이 필요하다. 앱은 컨테이너 안의 `0.0.0.0:3002`에 바인딩하고 Mac에서는 `127.0.0.1:3002`에만 게시한다. DB는 호스트 포트를 게시하지 않는다. OrbStack의 다른 컨테이너 접근 경로까지 차단한다고 가정하지 않는다. 현재 앱 자체 인증은 없고 진단 API는 운영에서 404를 반환한다. 앱 자체 로그인과 보호 검증 전에는 Tunnel로 외부에 공개하지 않는다. Cloudflare Access는 필수 조건이 아니다. [인증 전략 결정 기록](decisions/002-application-authentication.md)을 따른다.
+이 구성은 병합 후 검증된 main 커밋으로 실행한다. 5-B의 테스트 실행은 최종 운영 배포가 아니다. 기존 OrbStack 방식에 맞춰 앱과 PostgreSQL 16을 별도 Compose 프로젝트와 네트워크로 실행한다. macOS Node 프로세스도 가능하지만 별도 프로세스 관리와 DB 접근 설정이 필요하다. 앱은 컨테이너 안의 `0.0.0.0:3002`에 바인딩하고 Mac에서는 `127.0.0.1:3002`에만 게시한다. DB는 호스트 포트를 게시하지 않는다. OrbStack의 다른 컨테이너 접근 경로까지 차단한다고 가정하지 않는다. 앱 자체 로그인을 구현했으며 진단 API는 운영에서 404를 반환한다. 실제 배포와 외부 접근 검증은 아직 수행하지 않았다. 앱 자체 로그인과 보호 검증 전에는 Tunnel로 외부에 공개하지 않는다. Cloudflare Access는 필수 조건이 아니다. [인증 전략 결정 기록](decisions/002-application-authentication.md)을 따른다.
 
 ## 최초 배포와 갱신
 
 1. 병합된 main의 검증된 커밋을 운영용 체크아웃에서 확인하고, 기존 서비스·포트·디스크 여유를 확인한다. 다른 Compose 프로젝트나 개발 DB를 사용하지 않는다. 이 문서의 명령은 해당 체크아웃에서 실행한다.
-2. `.env.production.example`을 `.env.production`으로 복사하고 `chmod 600 .env.production`을 실행한다. 두 비밀번호는 **서로 다른 긴 영문·숫자 무작위 값**으로 바꾼다. 셸 환경에 같은 변수명이 설정돼 있으면 Compose의 env-file보다 우선할 수 있으므로 제거한다. 파일과 자격 증명은 Git·로그에 넣지 않고 안전하게 보관한다. 포트가 사용 중이면 `ATLAS_PORT`를 비어 있는 루프백 포트로 변경한다.
+2. `.env.production.example`을 `.env.production`으로 복사하고 `chmod 600 .env.production`을 실행한다. DB 비밀번호 두 개는 **서로 다른 긴 영문·숫자 무작위 값**으로 바꾼다. README의 비밀번호 해시 생성 절차에 따라 별도의 앱 로그인 해시와 계정 ID를 설정한다. `APP_ORIGIN`에는 실제 HTTPS 출처를 설정한다. `AUTH_SESSION_DAYS`는 1~30일이다. 셸 환경에 같은 변수명이 설정돼 있으면 Compose의 env-file보다 우선할 수 있으므로 제거한다. 파일과 자격 증명은 Git·로그에 넣지 않고 안전하게 보관한다. 포트가 사용 중이면 `ATLAS_PORT`를 비어 있는 루프백 포트로 변경한다.
 3. `docker compose --env-file .env.production -f compose.production.yaml build`로 고정된 커밋의 앱과 Markdown을 빌드한다. `docker compose --env-file .env.production -f compose.production.yaml up -d --wait db`로 전용 DB를 시작한다.
 4. 프로젝트 이름 `it-knowledge-atlas-prod`, 서비스 `db`, DB `atlas_prod`, 계정 `atlas_owner`가 맞는지 확인한다. `docker compose --env-file .env.production -f compose.production.yaml run --build --rm migrate`를 실행한다. `--build`는 이전 마이그레이션 이미지가 남아 있어도 현재 커밋으로 다시 빌드하기 위해 필요하다. 마이그레이션은 내부 호스트와 DB·계정을 검사하고 앱 계정에 필요한 테이블 권한을 부여하고 해당 자격 증명으로 실제 연결을 확인한다. 기존 비밀번호와 환경 파일이 다르면 실패하며 자동 변경하지 않는다. 운영 DB를 개발 명령이나 통합 테스트 대상으로 사용하지 않는다. 스키마 변경 전 백업하고 변경 내용을 검토한다.
-5. `docker compose --env-file .env.production -f compose.production.yaml up -d --wait app`을 실행한다. `docker compose --env-file .env.production -f compose.production.yaml ps`와 `http://127.0.0.1:3002`에서 오늘의 학습과 상세를 확인한다. 다른 포트를 선택했다면 주소를 바꾼다. 상태 확인은 앱 HTTP 응답과 DB 준비 상태를 나타내며 모든 기능의 정상 동작을 보장하지 않는다.
+5. `docker compose --env-file .env.production -f compose.production.yaml up -d --wait app`을 실행한다. `docker compose --env-file .env.production -f compose.production.yaml ps`와 `http://127.0.0.1:3002`에서 오늘의 학습과 상세를 확인한다. 다른 포트를 선택했다면 주소를 바꾼다. `/api/health`는 개인 데이터를 반환하지 않는다. 상태 확인은 앱 HTTP 응답과 DB 준비 상태를 나타내며 모든 기능의 정상 동작을 보장하지 않는다.
 6. 콘텐츠 변경도 검증·병합된 커밋으로 위 빌드와 마이그레이션 및 앱 시작 절차를 반복한다. 콘텐츠는 이미지에 포함되며 실행 중 파일 변경이 반영되지 않는다. DB 볼륨과 개인 기록은 빌드로 초기화되지 않는다. 적용 커밋을 백업과 함께 기록한다.
 
 DB 최초 생성 후 환경 파일만 바꿔서는 DB 비밀번호가 바뀌지 않는다. 앱 계정이 이미 있으면 마이그레이션은 비밀번호를 변경하지 않는다. 자격 증명 교체는 DB의 해당 역할과 환경 파일을 함께 변경하고 재연결을 확인한다. `down -v`, 볼륨 삭제, 초기화는 사용하지 않는다. 컨테이너 재시작 정책은 Mac 및 OrbStack 자동 기동을 보장하지 않는다.
@@ -31,3 +31,7 @@ chmod 700 "$HOME/atlas-backups"
 ## 외부 접근을 위한 후속 작업
 
 앱 자체 로그인과 서버 측 보호를 구현·검증한 뒤 기존 Tunnel의 설정과 선택된 호스트 루프백 주소·포트를 확인한다. 기존 서비스에 영향을 주지 않고 Free Tier 조건을 유지하는 방법을 확인한 후 별도 요청에 따라 외부 연결을 진행한다. 기존 Access 정책의 적용 여부도 확인하되 새 앱의 필수 조건으로 가정하지 않는다. 현재 Tunnel·DNS·Access 설정은 변경하지 않았으며 스마트폰 외부 접근은 아직 제공되지 않는다.
+
+## 인증 운영
+
+운영 쿠키는 Secure이므로 HTTPS에서만 전송된다. `APP_ORIGIN`은 외부 주소와 정확히 같아야 하며 운영 모드에서 HTTP 출처는 상태 변경에 허용되지 않는다. Tunnel 연결 전에는 별도의 격리 HTTPS 환경에서 로그인·로그아웃·복습 및 CSRF를 확인한다. 환경 파일은 접근 권한을 제한하고 백업 시 비밀로 취급한다. 세션 토큰은 무작위 값이며 별도 서명 비밀키는 필요하지 않다. 로그인 비밀번호를 교체하거나 유출이 의심되면 해시를 교체하고 서버 측 세션을 모두 폐기한다. 제한 해제와 세션 폐기 방법은 [README](../README.md#개인-로그인-설정)를 따른다. 인증 실패의 민감한 값은 기록하지 않으며 외부 공개 전 모니터링과 원본 우회 경로를 점검한다.

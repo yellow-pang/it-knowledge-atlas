@@ -1,12 +1,13 @@
 import Link from "next/link";
+import { requireAuth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { getConcepts } from "@/lib/concepts";
 import { getExamData } from "@/lib/exams";
 import { ReviewForm } from "./review-form";
 
 export const dynamic = "force-dynamic";
-export function generateStaticParams() { return getConcepts().map(({ id }) => ({ id })); }
 export default async function ConceptPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAuth();
   const { id } = await params;
   const concepts = getConcepts();
   const concept = concepts.find((item) => item.id === id);

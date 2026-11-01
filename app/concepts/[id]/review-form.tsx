@@ -22,6 +22,7 @@ export function ReviewForm({ conceptId }: { conceptId: string }) {
     try {
       const response = await fetch("/api/reviews", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...attempt, conceptId }) });
       const result = await response.json();
+      if (response.status === 401) { setMessage("세션이 만료되었습니다. 새 탭에서 로그인한 뒤 같은 평가를 다시 저장해 주세요."); return; }
       if (!response.ok) throw new Error(result.error || "저장하지 못했습니다.");
       setRetry(null); setMessage(`저장했습니다. 다음 복습일: ${result.nextReviewDate}`);
     } catch { setMessage("저장 여부를 확인하지 못했습니다. 같은 요청으로 다시 시도해 주세요."); }
